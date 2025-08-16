@@ -10,4 +10,17 @@
         npm install @mui/material @emotion/react @emotion/styled
         npm install @mui/icons-material
         npm install @mui/x-data-grid
-
+        npm install lucide-react
+        npm install -D tailwindcss postcss autoprefixer
+        npx tailwindcss init -p
+4) Create folder structure 
+    src/
+    ├── components/
+    │   └── TaskManagementDashboard.tsx
+    ├── types/
+    │   └── index.ts
+    ├── services/
+    │   └── api.ts
+    ├── App.tsx
+    ├── App.css
+    └── index.tsx
