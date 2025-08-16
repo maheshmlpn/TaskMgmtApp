@@ -13,6 +13,9 @@
         npm install lucide-react
         npm install -D tailwindcss postcss autoprefixer
         npx tailwindcss init -p
+        npm install bootstrap
+
+        FYI - trying tailwind but not working so for now using bootstrap
 4) Create folder structure 
     src/
     ├── components/
@@ -24,3 +27,5 @@
     ├── App.tsx
     ├── App.css
     └── index.tsx
+5) Start App
+    npm start

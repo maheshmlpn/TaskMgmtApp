@@ -143,24 +143,24 @@ const TaskManagementDashboard: React.FC = () => {
     ));
   };
 
-  const getPriorityColor = (priority: string) => {
+  const getPriorityBadgeClass = (priority: string) => {
     switch (priority) {
-      case 'High': return 'text-red-600 bg-red-100';
-      case 'Medium': return 'text-yellow-600 bg-yellow-100';
-      case 'Low': return 'text-green-600 bg-green-100';
-      case 'Critical': return 'text-purple-600 bg-purple-100';
-      default: return 'text-gray-600 bg-gray-100';
+      case 'High': return 'badge bg-danger';
+      case 'Medium': return 'badge bg-warning text-dark';
+      case 'Low': return 'badge bg-success';
+      case 'Critical': return 'badge bg-dark';
+      default: return 'badge bg-secondary';
     }
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusBadgeClass = (status: string) => {
     switch (status) {
-      case 'Open': return 'text-blue-600 bg-blue-100';
-      case 'InProgress': return 'text-orange-600 bg-orange-100';
-      case 'Testing': return 'text-purple-600 bg-purple-100';
-      case 'Completed': return 'text-green-600 bg-green-100';
-      case 'Closed': return 'text-gray-600 bg-gray-100';
-      default: return 'text-gray-600 bg-gray-100';
+      case 'Open': return 'badge bg-primary';
+      case 'InProgress': return 'badge bg-warning text-dark';
+      case 'Testing': return 'badge bg-info';
+      case 'Completed': return 'badge bg-success';
+      case 'Closed': return 'badge bg-secondary';
+      default: return 'badge bg-secondary';
     }
   };
 
@@ -171,63 +171,69 @@ const TaskManagementDashboard: React.FC = () => {
   const statusColumns = ['Open', 'InProgress', 'Testing', 'Completed', 'Closed'];
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-gray-900">Task Management Dashboard</h1>
-          <div className="flex gap-3">
+    <div className="container-fluid py-4" style={{ backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
+      <div className="container-xxl">
+        <div className="d-flex justify-content-between align-items-center mb-4">
+          <h1 className="h2 mb-0">Task Management Dashboard</h1>
+          <div className="btn-group" role="group">
             <button
+              type="button"
+              className="btn btn-outline-primary"
               onClick={() => setOpenGroupDialog(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
-              <Users size={20} />
+              <Users size={20} className="me-2" />
               New Group
             </button>
             <button
+              type="button"
+              className="btn btn-success"
               onClick={() => setOpenTaskDialog(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
             >
-              <Plus size={20} />
+              <Plus size={20} className="me-2" />
               New Task
             </button>
           </div>
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-gray-200 mb-6">
-          <button
-            onClick={() => setActiveTab(0)}
-            className={`px-4 py-2 font-medium ${activeTab === 0 
-              ? 'text-blue-600 border-b-2 border-blue-600' 
-              : 'text-gray-500 hover:text-gray-700'}`}
-          >
-            Kanban Board
-          </button>
-          <button
-            onClick={() => setActiveTab(1)}
-            className={`px-4 py-2 font-medium ${activeTab === 1 
-              ? 'text-blue-600 border-b-2 border-blue-600' 
-              : 'text-gray-500 hover:text-gray-700'}`}
-          >
-            Task List
-          </button>
-          <button
-            onClick={() => setActiveTab(2)}
-            className={`px-4 py-2 font-medium ${activeTab === 2 
-              ? 'text-blue-600 border-b-2 border-blue-600' 
-              : 'text-gray-500 hover:text-gray-700'}`}
-          >
-            Groups
-          </button>
-        </div>
+        <ul className="nav nav-tabs mb-4" role="tablist">
+          <li className="nav-item" role="presentation">
+            <button
+              className={`nav-link ${activeTab === 0 ? 'active' : ''}`}
+              onClick={() => setActiveTab(0)}
+              type="button"
+            >
+              Kanban Board
+            </button>
+          </li>
+          <li className="nav-item" role="presentation">
+            <button
+              className={`nav-link ${activeTab === 1 ? 'active' : ''}`}
+              onClick={() => setActiveTab(1)}
+              type="button"
+            >
+              Task List
+            </button>
+          </li>
+          <li className="nav-item" role="presentation">
+            <button
+              className={`nav-link ${activeTab === 2 ? 'active' : ''}`}
+              onClick={() => setActiveTab(2)}
+              type="button"
+            >
+              Groups
+            </button>
+          </li>
+        </ul>
 
         {/* Group Filter */}
-        <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-2">Filter by Group:</label>
+        <div className="mb-4">
+          <label className="form-label">Filter by Group:</label>
           <select
+            className="form-select"
+            style={{ maxWidth: '300px' }}
             value={selectedGroup || ''}
             onChange={(e) => setSelectedGroup(e.target.value ? Number(e.target.value) : null)}
-            className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">All Groups</option>
             {groups.map(group => (
@@ -239,42 +245,56 @@ const TaskManagementDashboard: React.FC = () => {
         {/* Tab Content */}
         {activeTab === 0 && (
           /* Kanban Board */
-          <div className="grid grid-cols-5 gap-4">
+          <div className="row g-3">
             {statusColumns.map(status => (
-              <div key={status} className="bg-white rounded-lg shadow p-4">
-                <h3 className="font-semibold text-gray-800 mb-4 flex items-center justify-between">
-                  {status}
-                  <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(status)}`}>
-                    {filteredTasks.filter(task => task.status === status).length}
-                  </span>
-                </h3>
-                <div className="space-y-3">
-                  {filteredTasks
-                    .filter(task => task.status === status)
-                    .map(task => (
-                      <div
-                        key={task.id}
-                        className="bg-white border border-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
-                        onClick={() => setSelectedTask(task)}
-                      >
-                        <h4 className="font-medium text-gray-900 mb-2">{task.title}</h4>
-                        <p className="text-sm text-gray-600 mb-3 line-clamp-2">{task.description}</p>
-                        <div className="flex items-center justify-between">
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(task.priority)}`}>
-                            {task.priority}
-                          </span>
-                          {task.assignedToName && (
-                            <div className="flex items-center gap-1 text-xs text-gray-500">
-                              <UserIcon size={12} />
-                              {task.assignedToName}
+              <div key={status} className="col">
+                <div className="card h-100">
+                  <div className="card-header d-flex justify-content-between align-items-center">
+                    <h5 className="card-title mb-0">{status}</h5>
+                    <span className={getStatusBadgeClass(status)}>
+                      {filteredTasks.filter(task => task.status === status).length}
+                    </span>
+                  </div>
+                  <div className="card-body">
+                    <div className="d-grid gap-3">
+                      {filteredTasks
+                        .filter(task => task.status === status)
+                        .map(task => (
+                          <div
+                            key={task.id}
+                            className="card border"
+                            style={{ cursor: 'pointer' }}
+                            onClick={() => setSelectedTask(task)}
+                          >
+                            <div className="card-body p-3">
+                              <h6 className="card-title">{task.title}</h6>
+                              <p className="card-text small text-muted" style={{ 
+                                display: '-webkit-box',
+                                WebkitLineClamp: 2,
+                                WebkitBoxOrient: 'vertical',
+                                overflow: 'hidden'
+                              }}>
+                                {task.description}
+                              </p>
+                              <div className="d-flex justify-content-between align-items-center">
+                                <span className={getPriorityBadgeClass(task.priority)}>
+                                  {task.priority}
+                                </span>
+                                {task.assignedToName && (
+                                  <small className="text-muted d-flex align-items-center">
+                                    <UserIcon size={12} className="me-1" />
+                                    {task.assignedToName}
+                                  </small>
+                                )}
+                              </div>
+                              <small className="text-muted mt-2 d-block">
+                                {task.groupName}
+                              </small>
                             </div>
-                          )}
-                        </div>
-                        <div className="mt-2 text-xs text-gray-500">
-                          {task.groupName}
-                        </div>
-                      </div>
-                    ))}
+                          </div>
+                        ))}
+                    </div>
+                  </div>
                 </div>
               </div>
             ))}
@@ -283,289 +303,350 @@ const TaskManagementDashboard: React.FC = () => {
 
         {activeTab === 1 && (
           /* Task List View */
-          <div className="bg-white rounded-lg shadow">
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Task</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Priority</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Assigned To</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Group</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Due Date</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {filteredTasks.map(task => (
-                    <tr key={task.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4">
-                        <div>
-                          <div className="text-sm font-medium text-gray-900">{task.title}</div>
-                          <div className="text-sm text-gray-500">{task.description}</div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(task.status)}`}>
-                          {task.status}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(task.priority)}`}>
-                          {task.priority}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-900">
-                        {task.assignedToName || 'Unassigned'}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-900">{task.groupName}</td>
-                      <td className="px-6 py-4 text-sm text-gray-900">
-                        {task.dueDate ? new Date(task.dueDate).toLocaleDateString() : '-'}
-                      </td>
-                      <td className="px-6 py-4 text-sm font-medium">
-                        <button
-                          onClick={() => setSelectedTask(task)}
-                          className="text-blue-600 hover:text-blue-900 mr-3"
-                        >
-                          <Edit size={16} />
-                        </button>
-                      </td>
+          <div className="card">
+            <div className="card-body p-0">
+              <div className="table-responsive">
+                <table className="table table-hover mb-0">
+                  <thead className="table-light">
+                    <tr>
+                      <th>Task</th>
+                      <th>Status</th>
+                      <th>Priority</th>
+                      <th>Assigned To</th>
+                      <th>Group</th>
+                      <th>Due Date</th>
+                      <th>Actions</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {filteredTasks.map(task => (
+                      <tr key={task.id}>
+                        <td>
+                          <div>
+                            <div className="fw-medium">{task.title}</div>
+                            <small className="text-muted">{task.description}</small>
+                          </div>
+                        </td>
+                        <td>
+                          <span className={getStatusBadgeClass(task.status)}>
+                            {task.status}
+                          </span>
+                        </td>
+                        <td>
+                          <span className={getPriorityBadgeClass(task.priority)}>
+                            {task.priority}
+                          </span>
+                        </td>
+                        <td>{task.assignedToName || 'Unassigned'}</td>
+                        <td>{task.groupName}</td>
+                        <td>
+                          {task.dueDate ? new Date(task.dueDate).toLocaleDateString() : '-'}
+                        </td>
+                        <td>
+                          <button
+                            className="btn btn-sm btn-outline-primary"
+                            onClick={() => setSelectedTask(task)}
+                          >
+                            <Edit size={16} />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         )}
 
         {activeTab === 2 && (
           /* Groups View */
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="row g-4">
             {groups.map(group => (
-              <div key={group.id} className="bg-white rounded-lg shadow p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-gray-900">{group.name}</h3>
-                  <Users className="text-gray-400" size={20} />
-                </div>
-                <p className="text-gray-600 mb-4">{group.description}</p>
-                <div className="mb-4">
-                  <p className="text-sm text-gray-500 mb-2">Owner: {group.ownerName}</p>
-                  <p className="text-sm text-gray-500">Members: {group.members.length}</p>
-                </div>
-                <div className="space-y-2">
-                  {group.members.map(member => (
-                    <div key={member.id} className="flex items-center gap-2 text-sm">
-                      <UserIcon size={16} className="text-gray-400" />
-                      <span>{member.name}</span>
-                      <span className="text-gray-500">({member.role})</span>
+              <div key={group.id} className="col-md-6 col-lg-4">
+                <div className="card h-100">
+                  <div className="card-header d-flex justify-content-between align-items-center">
+                    <h5 className="card-title mb-0">{group.name}</h5>
+                    <Users className="text-muted" size={20} />
+                  </div>
+                  <div className="card-body">
+                    <p className="card-text">{group.description}</p>
+                    <div className="mb-3">
+                      <small className="text-muted d-block">Owner: {group.ownerName}</small>
+                      <small className="text-muted">Members: {group.members.length}</small>
                     </div>
-                  ))}
-                </div>
-                <div className="mt-4 pt-4 border-t border-gray-200">
-                  <p className="text-sm text-gray-500">
-                    Tasks: {tasks.filter(task => task.groupId === group.id).length}
-                  </p>
+                    <div className="mb-3">
+                      {group.members.map(member => (
+                        <div key={member.id} className="d-flex align-items-center mb-2">
+                          <UserIcon size={16} className="text-muted me-2" />
+                          <span className="me-2">{member.name}</span>
+                          <small className="text-muted">({member.role})</small>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="card-footer text-muted">
+                    <small>
+                      Tasks: {tasks.filter(task => task.groupId === group.id).length}
+                    </small>
+                  </div>
                 </div>
               </div>
             ))}
           </div>
         )}
 
-        {/* Create Task Dialog */}
+        {/* Create Task Modal */}
         {openTaskDialog && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-lg max-w-md w-full p-6">
-              <h2 className="text-xl font-bold mb-4">Create New Task</h2>
-              <div className="space-y-4">
-                <input
-                  type="text"
-                  placeholder="Task Title"
-                  value={newTask.title}
-                  onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                <textarea
-                  placeholder="Task Description"
-                  value={newTask.description}
-                  onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  rows={3}
-                />
-                <select
-                  value={newTask.priority}
-                  onChange={(e) => setNewTask({ ...newTask, priority: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="Low">Low</option>
-                  <option value="Medium">Medium</option>
-                  <option value="High">High</option>
-                  <option value="Critical">Critical</option>
-                </select>
-                <select
-                  value={newTask.groupId}
-                  onChange={(e) => setNewTask({ ...newTask, groupId: Number(e.target.value) })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  {groups.map(group => (
-                    <option key={group.id} value={group.id}>{group.name}</option>
-                  ))}
-                </select>
-                <input
-                  type="date"
-                  value={newTask.dueDate}
-                  onChange={(e) => setNewTask({ ...newTask, dueDate: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div className="flex justify-end gap-3 mt-6">
-                <button
-                  onClick={() => setOpenTaskDialog(false)}
-                  className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-md"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleCreateTask}
-                  disabled={!newTask.title}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
-                >
-                  Create Task
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Task Detail Dialog */}
-        {selectedTask && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-lg max-w-2xl w-full p-6 max-h-96 overflow-y-auto">
-              <div className="flex justify-between items-start mb-4">
-                <h2 className="text-xl font-bold">{selectedTask.title}</h2>
-                <button
-                  onClick={() => setSelectedTask(null)}
-                  className="text-gray-500 hover:text-gray-700"
-                >
-                  ×
-                </button>
-              </div>
-              <div className="space-y-4">
-                <p className="text-gray-600">{selectedTask.description}</p>
-                <div className="flex gap-4">
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(selectedTask.status)}`}>
-                    {selectedTask.status}
-                  </span>
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(selectedTask.priority)}`}>
-                    {selectedTask.priority}
-                  </span>
+          <div className="modal d-block" tabIndex={-1} style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+            <div className="modal-dialog">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h5 className="modal-title">Create New Task</h5>
+                  <button
+                    type="button"
+                    className="btn-close"
+                    onClick={() => setOpenTaskDialog(false)}
+                  ></button>
                 </div>
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <strong>Created by:</strong> {selectedTask.createdByName}
+                <div className="modal-body">
+                  <div className="mb-3">
+                    <label className="form-label">Task Title</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={newTask.title}
+                      onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
+                      placeholder="Enter task title"
+                    />
                   </div>
-                  <div>
-                    <strong>Assigned to:</strong> {selectedTask.assignedToName || 'Unassigned'}
+                  <div className="mb-3">
+                    <label className="form-label">Description</label>
+                    <textarea
+                      className="form-control"
+                      rows={3}
+                      value={newTask.description}
+                      onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
+                      placeholder="Enter task description"
+                    />
                   </div>
-                  <div>
-                    <strong>Group:</strong> {selectedTask.groupName}
+                  <div className="mb-3">
+                    <label className="form-label">Priority</label>
+                    <select
+                      className="form-select"
+                      value={newTask.priority}
+                      onChange={(e) => setNewTask({ ...newTask, priority: e.target.value })}
+                    >
+                      <option value="Low">Low</option>
+                      <option value="Medium">Medium</option>
+                      <option value="High">High</option>
+                      <option value="Critical">Critical</option>
+                    </select>
                   </div>
-                  <div>
-                    <strong>Due Date:</strong> {selectedTask.dueDate ? new Date(selectedTask.dueDate).toLocaleDateString() : 'Not set'}
-                  </div>
-                </div>
-                
-                {/* Status Update */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Update Status:</label>
-                  <select
-                    value={selectedTask.status}
-                    onChange={(e) => handleUpdateTaskStatus(selectedTask.id, e.target.value)}
-                    className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    {statusColumns.map(status => (
-                      <option key={status} value={status}>{status}</option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Assign Task */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Assign to:</label>
-                  <select
-                    value={selectedTask.assignedToId || ''}
-                    onChange={(e) => e.target.value && handleAssignTask(selectedTask.id, Number(e.target.value))}
-                    className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="">Unassigned</option>
-                    {groups
-                      .find(g => g.id === selectedTask.groupId)
-                      ?.members.map(member => (
-                        <option key={member.id} value={member.id}>{member.name}</option>
+                  <div className="mb-3">
+                    <label className="form-label">Group</label>
+                    <select
+                      className="form-select"
+                      value={newTask.groupId}
+                      onChange={(e) => setNewTask({ ...newTask, groupId: Number(e.target.value) })}
+                    >
+                      {groups.map(group => (
+                        <option key={group.id} value={group.id}>{group.name}</option>
                       ))}
-                  </select>
+                    </select>
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label">Due Date</label>
+                    <input
+                      type="date"
+                      className="form-control"
+                      value={newTask.dueDate}
+                      onChange={(e) => setNewTask({ ...newTask, dueDate: e.target.value })}
+                    />
+                  </div>
+                </div>
+                <div className="modal-footer">
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => setOpenTaskDialog(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={handleCreateTask}
+                    disabled={!newTask.title}
+                  >
+                    Create Task
+                  </button>
                 </div>
               </div>
             </div>
           </div>
         )}
 
-        {/* Create Group Dialog */}
-        {openGroupDialog && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-lg max-w-md w-full p-6">
-              <h2 className="text-xl font-bold mb-4">Create New Group</h2>
-              <div className="space-y-4">
-                <input
-                  type="text"
-                  placeholder="Group Name"
-                  value={newGroup.name}
-                  onChange={(e) => setNewGroup({ ...newGroup, name: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                <textarea
-                  placeholder="Group Description"
-                  value={newGroup.description}
-                  onChange={(e) => setNewGroup({ ...newGroup, description: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  rows={3}
-                />
-                <select
-                  value={newGroup.ownerId}
-                  onChange={(e) => setNewGroup({ ...newGroup, ownerId: Number(e.target.value) })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  {users.filter(user => user.role === 'Manager' || user.role === 'Admin').map(user => (
-                    <option key={user.id} value={user.id}>{user.name}</option>
-                  ))}
-                </select>
+        {/* Task Detail Modal */}
+        {selectedTask && (
+          <div className="modal d-block" tabIndex={-1} style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+            <div className="modal-dialog modal-lg">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h5 className="modal-title">{selectedTask.title}</h5>
+                  <button
+                    type="button"
+                    className="btn-close"
+                    onClick={() => setSelectedTask(null)}
+                  ></button>
+                </div>
+                <div className="modal-body">
+                  <p className="text-muted">{selectedTask.description}</p>
+                  <div className="row mb-3">
+                    <div className="col-6">
+                      <span className={getStatusBadgeClass(selectedTask.status)} style={{ marginRight: '10px' }}>
+                        {selectedTask.status}
+                      </span>
+                      <span className={getPriorityBadgeClass(selectedTask.priority)}>
+                        {selectedTask.priority}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="row g-3 mb-4">
+                    <div className="col-md-6">
+                      <strong>Created by:</strong> {selectedTask.createdByName}
+                    </div>
+                    <div className="col-md-6">
+                      <strong>Assigned to:</strong> {selectedTask.assignedToName || 'Unassigned'}
+                    </div>
+                    <div className="col-md-6">
+                      <strong>Group:</strong> {selectedTask.groupName}
+                    </div>
+                    <div className="col-md-6">
+                      <strong>Due Date:</strong> {selectedTask.dueDate ? new Date(selectedTask.dueDate).toLocaleDateString() : 'Not set'}
+                    </div>
+                  </div>
+                  
+                  <div className="row g-3">
+                    <div className="col-md-6">
+                      <label className="form-label">Update Status:</label>
+                      <select
+                        className="form-select"
+                        value={selectedTask.status}
+                        onChange={(e) => handleUpdateTaskStatus(selectedTask.id, e.target.value)}
+                      >
+                        {statusColumns.map(status => (
+                          <option key={status} value={status}>{status}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="col-md-6">
+                      <label className="form-label">Assign to:</label>
+                      <select
+                        className="form-select"
+                        value={selectedTask.assignedToId || ''}
+                        onChange={(e) => e.target.value && handleAssignTask(selectedTask.id, Number(e.target.value))}
+                      >
+                        <option value="">Unassigned</option>
+                        {groups
+                          .find(g => g.id === selectedTask.groupId)
+                          ?.members.map(member => (
+                            <option key={member.id} value={member.id}>{member.name}</option>
+                          ))}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div className="modal-footer">
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => setSelectedTask(null)}
+                  >
+                    Close
+                  </button>
+                </div>
               </div>
-              <div className="flex justify-end gap-3 mt-6">
-                <button
-                  onClick={() => setOpenGroupDialog(false)}
-                  className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-md"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={() => {
-                    const group: Group = {
-                      id: groups.length + 1,
-                      name: newGroup.name,
-                      description: newGroup.description,
-                      ownerId: newGroup.ownerId,
-                      ownerName: users.find(u => u.id === newGroup.ownerId)?.name || '',
-                      members: []
-                    };
-                    setGroups([...groups, group]);
-                    setOpenGroupDialog(false);
-                    setNewGroup({ name: '', description: '', ownerId: 1 });
-                  }}
-                  disabled={!newGroup.name}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
-                >
-                  Create Group
-                </button>
+            </div>
+          </div>
+        )}
+
+        {/* Create Group Modal */}
+        {openGroupDialog && (
+          <div className="modal d-block" tabIndex={-1} style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+            <div className="modal-dialog">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h5 className="modal-title">Create New Group</h5>
+                  <button
+                    type="button"
+                    className="btn-close"
+                    onClick={() => setOpenGroupDialog(false)}
+                  ></button>
+                </div>
+                <div className="modal-body">
+                  <div className="mb-3">
+                    <label className="form-label">Group Name</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={newGroup.name}
+                      onChange={(e) => setNewGroup({ ...newGroup, name: e.target.value })}
+                      placeholder="Enter group name"
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label">Description</label>
+                    <textarea
+                      className="form-control"
+                      rows={3}
+                      value={newGroup.description}
+                      onChange={(e) => setNewGroup({ ...newGroup, description: e.target.value })}
+                      placeholder="Enter group description"
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label">Owner</label>
+                    <select
+                      className="form-select"
+                      value={newGroup.ownerId}
+                      onChange={(e) => setNewGroup({ ...newGroup, ownerId: Number(e.target.value) })}
+                    >
+                      {users.filter(user => user.role === 'Manager' || user.role === 'Admin').map(user => (
+                        <option key={user.id} value={user.id}>{user.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+                <div className="modal-footer">
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => setOpenGroupDialog(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={() => {
+                      const group: Group = {
+                        id: groups.length + 1,
+                        name: newGroup.name,
+                        description: newGroup.description,
+                        ownerId: newGroup.ownerId,
+                        ownerName: users.find(u => u.id === newGroup.ownerId)?.name || '',
+                        members: []
+                      };
+                      setGroups([...groups, group]);
+                      setOpenGroupDialog(false);
+                      setNewGroup({ name: '', description: '', ownerId: 1 });
+                    }}
+                    disabled={!newGroup.name}
+                  >
+                    Create Group
+                  </button>
+                </div>
               </div>
             </div>
           </div>
