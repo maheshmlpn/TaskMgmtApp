@@ -1,4 +1,5 @@
-﻿namespace TaskManagementAPI.DTOs
+﻿
+namespace TaskManagementAPI.DTOs
 {
     public class GroupDto
     {
@@ -8,5 +9,6 @@
         public int OwnerId { get; set; }
         public string OwnerName { get; set; }
         public List<UserDto> Members { get; set; } = new List<UserDto>();
+        public DateTime CreatedDate { get; internal set; }
     }
 }
