@@ -9,8 +9,13 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Add Entity Framework
+//builder.Services.AddDbContext<TaskManagementContext>(options =>
+//    options.UseSqlServer(builder.Configuration.GetConnectionString("TaskDb")));
+
 builder.Services.AddDbContext<TaskManagementContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("TaskDb")));
+    options.UseSqlite(builder.Configuration.GetConnectionString("SqlLteTaskDb")));
+
+//builder.Services.AddDbContext<TaskManagementContext>();
 
 // Add CORS
 builder.Services.AddCors(options =>
