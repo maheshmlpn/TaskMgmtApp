@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Plus, Edit, User as UserIcon, Trash2, CheckSquare, Users, MessageCircle } from 'lucide-react';
 import { User, Group, TaskItem, TaskComment } from '../types';
 
+// API Configuration
+const API_BASE_URL = 'https://localhost:7212/api';
 
 const TaskManagementDashboard: React.FC = () => {
   const [tasks, setTasks] = useState<TaskItem[]>([]);
@@ -95,52 +97,184 @@ const TaskManagementDashboard: React.FC = () => {
   ];
 
   useEffect(() => {
-    setUsers(mockUsers);
-    setGroups(mockGroups);
-    setTasks(mockTasks);
+    // setUsers(mockUsers);
+    // setGroups(mockGroups);
+    // setTasks(mockTasks);
+    loadTasks();
+    loadGroups();
+    loadUsers();
   }, []);
 
-  const handleCreateTask = () => {
-    const task: TaskItem = {
-      id: tasks.length + 1,
-      title: newTask.title,
-      description: newTask.description,
-      status: 'Open',
-      priority: newTask.priority,
-      createdById: 1,
-      createdByName: 'Admin User',
-      groupId: newTask.groupId,
-      groupName: groups.find(g => g.id === newTask.groupId)?.name || '',
-      createdDate: new Date().toISOString(),
-      dueDate: newTask.dueDate || undefined,
-      lastUpdated: new Date().toISOString()
-    };
-
-    setTasks([...tasks, task]);
-    setOpenTaskDialog(false);
-    setNewTask({ title: '', description: '', priority: 'Medium', groupId: 1, dueDate: '' });
+  const loadTasks = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/Tasks`);
+      if (response.ok) {
+        const apiTasks = await response.json();
+        setTasks(apiTasks);
+      } else {
+        console.error('Failed to load tasks, using mock data');
+        setTasks(mockTasks);
+      }
+    } catch (error) {
+      console.error('Error loading tasks:', error);
+      setTasks(mockTasks);
+    }
   };
 
-  const handleUpdateTaskStatus = (taskId: number, newStatus: string) => {
-    setTasks(tasks.map(task => 
-      task.id === taskId 
-        ? { ...task, status: newStatus, lastUpdated: new Date().toISOString() }
-        : task
-    ));
+  const loadGroups = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/Groups`);
+      if (response.ok) {
+        const apiGroups = await response.json();
+        setGroups(apiGroups);
+      } else {
+        console.error('Failed to load groups, using mock data');
+        setGroups(mockGroups);
+      }
+    } catch (error) {
+      console.error('Error loading groups:', error);
+      setGroups(mockGroups);
+    }
   };
 
-  const handleAssignTask = (taskId: number, userId: number) => {
-    const user = users.find(u => u.id === userId);
-    setTasks(tasks.map(task => 
-      task.id === taskId 
-        ? { 
-            ...task, 
-            assignedToId: userId, 
-            assignedToName: user?.name,
-            lastUpdated: new Date().toISOString() 
-          }
-        : task
-    ));
+  const loadUsers = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/Users`);
+      if (response.ok) {
+        const apiUsers = await response.json();
+        setUsers(apiUsers);
+      } else {
+        console.error('Failed to load users, using mock data');
+        setUsers(mockUsers);
+      }
+    } catch (error) {
+      console.error('Error loading users:', error);
+      setUsers(mockUsers);
+    }
+  };
+
+  const handleCreateTask = async () => {
+      try {
+      // Prepare the data for API call
+      const createTaskDto = {
+        title: newTask.title,
+        description: newTask.description,
+        priority: newTask.priority,
+        createdById: 1, // Replace with actual logged-in user ID
+        groupId: newTask.groupId,
+        dueDate: newTask.dueDate || null
+      };
+
+      // Call the API
+      const response = await fetch(`${API_BASE_URL}/Tasks`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(createTaskDto)
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const createdTask = await response.json();
+      
+      // Add the new task to the state
+      setTasks([...tasks, createdTask]);
+      
+      // Close dialog and reset form
+      setOpenTaskDialog(false);
+      setNewTask({ title: '', description: '', priority: 'Medium', groupId: 1, dueDate: '' });
+      
+      // Optional: Show success message
+      console.log('Task created successfully:', createdTask);
+      
+    } catch (error) {
+      console.error('Error creating task:', error);
+      // Optional: Show error message to user
+      alert('Failed to create task. Please try again.');
+    }
+  };
+
+  const handleUpdateTaskStatus = async (taskId: number, newStatus: string) => {
+    try {
+      const updateStatusDto = {
+        status: newStatus,
+        updatedById: 1 // Replace with actual logged-in user ID
+      };
+
+      const response = await fetch(`${API_BASE_URL}/Tasks/${taskId}/status`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updateStatusDto)
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      // Update local state
+      setTasks(tasks.map(task => 
+        task.id === taskId 
+          ? { ...task, status: newStatus, lastUpdated: new Date().toISOString() }
+          : task
+      ));
+
+      console.log('Task status updated successfully');
+    } catch (error) {
+      console.error('Error updating task status:', error);
+      alert('Failed to update task status. Please try again.');
+    }
+  };
+
+  const handleAssignTask = async (taskId: number, userId: number) => {
+    try {
+      const user = users.find(u => u.id === userId);
+      const task = tasks.find(t => t.id === taskId);
+      
+      if (!task) return;
+
+      const updateTaskDto = {
+        title: task.title,
+        description: task.description,
+        priority: task.priority,
+        assignedToId: userId,
+        dueDate: task.dueDate,
+        updatedById: 1 // Replace with actual logged-in user ID
+      };
+
+      const response = await fetch(`${API_BASE_URL}/Tasks/${taskId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updateTaskDto)
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      // Update local state
+      setTasks(tasks.map(task => 
+        task.id === taskId 
+          ? { 
+              ...task, 
+              assignedToId: userId, 
+              assignedToName: user?.name,
+              lastUpdated: new Date().toISOString() 
+            }
+          : task
+      ));
+
+      console.log('Task assigned successfully');
+    } catch (error) {
+      console.error('Error assigning task:', error);
+      alert('Failed to assign task. Please try again.');
+    }
   };
 
   const getPriorityBadgeClass = (priority: string) => {
