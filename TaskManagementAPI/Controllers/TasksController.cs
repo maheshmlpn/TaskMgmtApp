@@ -212,40 +212,7 @@ namespace TaskManagementAPI.Controllers
             return Ok(result);
         }
 
-        [HttpPost("groups")]
-        public async Task<ActionResult<GroupDto>> CreateGroup(CreateGroupDto createGroupDto)
-        {
-            var group = new Group
-            {
-                Name = createGroupDto.Name,
-                Description = createGroupDto.Description,
-                OwnerId = createGroupDto.OwnerId,
-                CreatedDate = DateTime.UtcNow
-            };
-
-            _context.Groups.Add(group);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetGroup), new { id = group.Id }, group);
-        }
-
-        [HttpGet("groups")]
-        public async Task<ActionResult<IEnumerable<GroupDto>>> GetGroup()
-        {
-            var tasks = await _context.Groups
-                .Select(t => new GroupDto
-                {
-                    Id = t.Id,
-                    Name = t.Name,
-                    Description = t.Description,
-                    OwnerId = t.OwnerId,
-                    OwnerName = t.Owner.Name,
-                    CreatedDate = t.CreatedDate
-                })
-                .ToListAsync();
-
-            return Ok(tasks);
-        }
+        
         
         [HttpGet("group/{groupId}")]
         public async Task<ActionResult<IEnumerable<TaskDto>>> GetTasksByGroup(int groupId)

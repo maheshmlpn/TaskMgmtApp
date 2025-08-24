@@ -1,36 +1,10 @@
-// Enums (define first since they're used by interfaces)
-export enum TaskStatus {
-  Open = 'Open',
-  InProgress = 'InProgress',
-  Testing = 'Testing',
-  Completed = 'Completed',
-  Closed = 'Closed'
-}
-
-export enum Priority {
-  Low = 'Low',
-  Medium = 'Medium',
-  High = 'High',
-  Critical = 'Critical'
-}
-
-// User related types
 export interface User {
   id: number;
   name: string;
   email: string;
-  role: string;
+  role: 'Admin' | 'Manager' | 'User';
 }
 
-// Task comment interface
-export interface TaskComment {
-  id: number;
-  comment: string;
-  userName: string;
-  createdDate: string;
-}
-
-// Group related types
 export interface Group {
   id: number;
   name: string;
@@ -40,57 +14,95 @@ export interface Group {
   members: User[];
 }
 
-// Task related types
-export interface TaskItem {
-  id: number;
-  title: string;
-  description: string;
-  status: string;
-  priority: string;
-  createdById: number;
-  createdByName: string;
-  assignedToId?: number;
-  assignedToName?: string;
-  groupId: number;
-  groupName: string;
-  createdDate: string;
-  dueDate?: string;
-  completedDate?: string;
-  lastUpdated: string;
-  comments?: TaskComment[];
+export interface GroupTasks extends Group {
+  tasks: TaskItem[];
 }
 
-// API DTOs
-export interface CreateTaskDto {
-  title: string;
+export interface TaskComment {
+  id: number;
+  comment: string;
+  userName: string;
+  createdDate: string;
+}
+
+export interface CreateGroupDto {
+  id: number;
+  name: string;
   description: string;
-  priority: string;
-  createdById: number;
-  groupId: number;
-  dueDate?: string;
+  ownerId: number;
+  ownerName: string;
 }
 
 export interface UpdateTaskDto {
-  title: string;
-  description: string;
-  priority: string;
-  assignedToId?: number;
-  dueDate?: string;
-  updatedById: number;
+  title?: string;
+  description?: string;
+  assigneeId?: string;
+  dueDate?: string; // ISO date string
+  tags?: string[];
+  estimatedHours?: number;
+  actualHours?: number;
 }
 
 export interface UpdateTaskStatusDto {
   status: string;
-  updatedById: number;
+  comment?: string; // Optional comment when changing status
 }
 
 export interface CreateCommentDto {
-  userId: number;
-  comment: string;
+  taskId: string;
+  content: string;
 }
 
-export interface CreateGroupDto {
-  name: string;
+// DTO Interfaces for API requests
+export interface CreateTaskDto {
+  title: string;
+  description?: string;
+  assigneeId?: string;
+  dueDate?: string; // ISO date string format: "2024-12-31T23:59:59.000Z"
+  tags?: string[];
+  estimatedHours?: number;
+}
+
+export interface UpdateTaskDto {
+  title?: string;
+  description?: string;
+  assigneeId?: string;
+  dueDate?: string; // ISO date string
+  tags?: string[];
+  estimatedHours?: number;
+  actualHours?: number;
+}
+
+// Enums for better type safety
+export enum TaskStatus {
+  OPEN = 'Open',
+  IN_PROGRESS = 'InProgress',
+  TESTING = 'Testing',
+  COMPLETED = 'Completed',
+  CLOSED = 'Closed'
+}
+
+export enum TaskPriority {
+  LOW = 'Low',
+  MEDIUM = 'Medium',
+  HIGH = 'High',
+  CRITICAL = 'Critical'
+}
+
+export interface TaskItem {
+  id: number;
+  title: string;
   description: string;
-  ownerId: number;
+  status: TaskStatus;
+  priority: TaskPriority;
+  createdById: number;
+  createdByName: string;
+  assignedToId: number | null;
+  assignedToName: string | undefined;
+  groupId: number;
+  groupName: string;
+  createdDate: string;
+  dueDate: string | null;
+  lastUpdated: string;
+  comments?: TaskComment[];
 }
