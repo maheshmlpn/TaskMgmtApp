@@ -18,6 +18,11 @@ namespace TaskManagementAPI.Models
         [StringLength(50)]
         public string Role { get; set; } // Admin, Manager, User
 
+        [StringLength(50)]
+        [Required]
+        public string Password { get; set; } // Admin, Manager, User
+
+
         public DateTime CreatedDate { get; set; }
 
         // Navigation properties

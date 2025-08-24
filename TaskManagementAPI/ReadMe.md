@@ -18,3 +18,10 @@ dotnet add package Microsoft.AspNetCore.Cors
 	b) Ctr + Shift + P to open preference and search sql lite
 	c) You will see open database and select the sql lite db file
 	b) You will see SQLLITE Explorer window and can query sql lite db
+
+
+4) Add migration for entity framework 
+	dotnet tool install --global dotnet-ef  (first you need to setup tool)
+	dotnet ef migrations add DbInitialMigration (add migration)
+	dotnet ef database update (update the migration to database)
+

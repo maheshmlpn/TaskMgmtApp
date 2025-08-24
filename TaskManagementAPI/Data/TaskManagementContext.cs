@@ -86,10 +86,10 @@ namespace TaskManagementAPI.Data
         {
             // Seed Users
             modelBuilder.Entity<User>().HasData(
-                new User { Id = 1, Name = "Admin User", Email = "admin@company.com", Role = "Admin", CreatedDate = DateTime.UtcNow },
-                new User { Id = 2, Name = "John Manager", Email = "john@company.com", Role = "Manager", CreatedDate = DateTime.UtcNow },
-                new User { Id = 3, Name = "Jane Developer", Email = "jane@company.com", Role = "User", CreatedDate = DateTime.UtcNow },
-                new User { Id = 4, Name = "Bob Tester", Email = "bob@company.com", Role = "User", CreatedDate = DateTime.UtcNow }
+                new User { Id = 1, Name = "Admin User", Email = "admin@company.com", Role = "Admin", CreatedDate = DateTime.UtcNow, Password="Admin@123" },
+                new User { Id = 2, Name = "John Manager", Email = "john@company.com", Role = "Manager", CreatedDate = DateTime.UtcNow, Password="John@123" },
+                new User { Id = 3, Name = "Jane Developer", Email = "jane@company.com", Role = "User", CreatedDate = DateTime.UtcNow, Password="Jane@123" },
+                new User { Id = 4, Name = "Bob Tester", Email = "bob@company.com", Role = "User", CreatedDate = DateTime.UtcNow, Password="Bob@123" }
             );
 
             // Seed Groups
