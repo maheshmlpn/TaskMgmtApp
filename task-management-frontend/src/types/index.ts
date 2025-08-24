@@ -2,7 +2,7 @@ export interface User {
   id: number;
   name: string;
   email: string;
-  role: 'Admin' | 'Manager' | 'User';
+  role: "Admin" | "Manager" | "User";
 }
 
 export interface Group {
@@ -75,18 +75,18 @@ export interface UpdateTaskDto {
 
 // Enums for better type safety
 export enum TaskStatus {
-  OPEN = 'Open',
-  IN_PROGRESS = 'InProgress',
-  TESTING = 'Testing',
-  COMPLETED = 'Completed',
-  CLOSED = 'Closed'
+  OPEN = "Open",
+  IN_PROGRESS = "InProgress",
+  TESTING = "Testing",
+  COMPLETED = "Completed",
+  CLOSED = "Closed",
 }
 
 export enum TaskPriority {
-  LOW = 'Low',
-  MEDIUM = 'Medium',
-  HIGH = 'High',
-  CRITICAL = 'Critical'
+  LOW = "Low",
+  MEDIUM = "Medium",
+  HIGH = "High",
+  CRITICAL = "Critical",
 }
 
 export interface TaskItem {
